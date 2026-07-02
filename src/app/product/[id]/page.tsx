@@ -1,0 +1,157 @@
+import Image from "next/image";
+import Link from "next/link";
+import { ExternalLink, Star, ChevronLeft } from "lucide-react";
+import { PriceHistoryChart } from "@/components/price-history-chart";
+import { RecordView } from "@/components/record-view";
+import { AddToCartButton } from "./add-to-cart-button";
+import { SetAlertForm } from "./set-alert-form";
+import { formatPrice } from "@/lib/utils";
+
+async function fetchProduct(id: string) {
+  try {
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/product/${id}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.product;
+  } catch {
+    return null;
+  }
+}
+
+export default async function ProductPage(props: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await props.params;
+  const product = await fetchProduct(id);
+
+  if (!product) {
+    return (
+      <div className="flex flex-col items-center gap-3 px-4 py-24 text-center text-gray-400">
+        <span className="text-5xl">🔍</span>
+        <p className="font-medium text-gray-600">Product not found</p>
+        <Link href="/" className="text-sm text-brand-600 hover:underline">
+          ← Back to home
+        </Link>
+      </div>
+    );
+  }
+
+  const hasDiscount =
+    product.originalPrice && product.originalPrice > product.currentPrice;
+
+  return (
+    <div className="animate-fade-in px-4 py-6 sm:px-6">
+      <RecordView
+        product={{
+          id: product.id,
+          darazUrl: product.darazUrl,
+          title: product.title,
+          image: product.image,
+          currentPrice: product.currentPrice,
+          originalPrice: product.originalPrice,
+          discount: product.discount,
+          rating: product.rating,
+          seller: product.seller,
+        }}
+      />
+      <Link
+        href="/search"
+        className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-brand-600"
+      >
+        <ChevronLeft className="h-4 w-4" /> Back to results
+      </Link>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {/* Image */}
+        <div className="relative aspect-square overflow-hidden rounded-3xl bg-white ring-1 ring-black/5">
+          {product.image && (
+            <Image
+              src={product.image}
+              alt={product.title}
+              fill
+              className="object-contain p-6"
+              unoptimized
+            />
+          )}
+        </div>
+
+        {/* Details */}
+        <div className="flex flex-col gap-4 rounded-3xl bg-white p-6 ring-1 ring-black/5">
+          <h1 className="text-xl font-bold leading-snug text-[#1a1730]">
+            {product.title}
+          </h1>
+
+          {product.rating != null && (
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1">
+                <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                <span className="text-sm font-semibold text-amber-700">
+                  {product.rating.toFixed(1)}
+                </span>
+              </div>
+              {product.reviewCount != null && (
+                <span className="text-sm text-gray-400">
+                  {product.reviewCount.toLocaleString()} reviews
+                </span>
+              )}
+            </div>
+          )}
+
+          <div>
+            <div className="flex items-baseline gap-3">
+              <p className="text-3xl font-extrabold text-brand-600">
+                {formatPrice(product.currentPrice)}
+              </p>
+              {hasDiscount && (
+                <p className="text-sm text-gray-400 line-through">
+                  {formatPrice(product.originalPrice)}
+                </p>
+              )}
+            </div>
+            {hasDiscount && product.discount && (
+              <span className="mt-1 inline-block rounded-full bg-rose-50 px-2 py-0.5 text-xs font-semibold text-rose-600">
+                Save {product.discount}%
+              </span>
+            )}
+          </div>
+
+          {product.seller && (
+            <p className="text-sm text-gray-500">
+              Sold by <span className="font-medium text-gray-700">{product.seller}</span>
+            </p>
+          )}
+
+          <div className="flex gap-3">
+            <AddToCartButton product={product} />
+            <a
+              href={product.darazUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-2xl border border-brand-200 px-4 py-3 text-sm font-semibold text-brand-600 transition-colors hover:border-brand-500 hover:bg-brand-50"
+            >
+              <ExternalLink className="h-4 w-4" />
+              View on Daraz
+            </a>
+          </div>
+
+          <SetAlertForm
+            productId={product.id}
+            currentPrice={product.currentPrice}
+          />
+        </div>
+      </div>
+
+      {/* Price history */}
+      {product.priceHistory?.length > 0 && (
+        <div className="mt-6 rounded-3xl bg-white p-6 ring-1 ring-black/5">
+          <h2 className="mb-4 text-base font-bold text-[#1a1730]">
+            Price History
+          </h2>
+          <PriceHistoryChart data={product.priceHistory} />
+        </div>
+      )}
+    </div>
+  );
+}

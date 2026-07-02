@@ -1,65 +1,177 @@
-import Image from "next/image";
+import { Suspense } from "react";
+import Link from "next/link";
+import { SearchBar } from "@/components/search-bar";
+import { CategoryNav } from "@/components/category-nav";
+import { ProductCard, type SearchProductLike } from "@/components/product-card";
+import { RecentlyViewed } from "@/components/recently-viewed";
+import { TrendingUp, Tag, Bell, ArrowRight, Flame } from "lucide-react";
 
-export default function Home() {
+// Pull a mix of categories so the home grid shows variety, not one type.
+const TRENDING_QUERIES = [
+  "headphones",
+  "sneakers",
+  "smart watch",
+  "perfume",
+  "sunglasses",
+];
+
+async function fetchCategory(q: string): Promise<SearchProductLike[]> {
+  try {
+    const res = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/search?q=${encodeURIComponent(q)}`,
+      { next: { revalidate: 1800 } }
+    );
+    const data = await res.json();
+    return (data.results ?? []).filter((p: SearchProductLike) => p.image);
+  } catch {
+    return [];
+  }
+}
+
+async function TrendingGrid() {
+  const lists = await Promise.all(TRENDING_QUERIES.map(fetchCategory));
+  // Best deals first within each category, then interleave round-robin.
+  const sorted = lists.map((l) =>
+    [...l].sort((a, b) => (b.discount ?? 0) - (a.discount ?? 0))
+  );
+
+  const products: SearchProductLike[] = [];
+  const seen = new Set<string>();
+  for (let round = 0; round < 4; round++) {
+    for (const list of sorted) {
+      const p = list[round];
+      if (p && !seen.has(p.id)) {
+        seen.add(p.id);
+        products.push(p);
+      }
+    }
+  }
+
+  const top = products.slice(0, 10);
+  if (top.length === 0) return null;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="stagger grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      {top.map((p, i) => (
+        <ProductCard key={p.id} index={Math.min(i, 10)} {...p} />
+      ))}
+    </div>
+  );
+}
+
+function GridSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      {Array.from({ length: 10 }).map((_, i) => (
+        <div key={i} className="rounded-3xl bg-white p-3 ring-1 ring-black/5">
+          <div className="skeleton aspect-square rounded-2xl" />
+          <div className="mt-3 space-y-2 px-1">
+            <div className="skeleton h-4 w-full rounded" />
+            <div className="skeleton h-7 w-20 rounded-full" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <div className="px-4 py-5 sm:px-6">
+      <div className="mb-5">
+        <CategoryNav />
+      </div>
+
+      {/* Hero — no overflow-hidden so the search dropdown isn't clipped */}
+      <section className="relative z-10 rounded-[26px] bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 px-6 py-14 text-center sm:px-10 sm:py-16">
+        <div
+          className="pointer-events-none absolute inset-0 rounded-[26px] opacity-40"
+          style={{
+            background:
+              "radial-gradient(600px 300px at 20% 0%, rgba(255,255,255,0.25), transparent 60%)",
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+        <div className="animate-fade-up relative mx-auto flex max-w-2xl flex-col items-center gap-5">
+          <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white/90 ring-1 ring-white/20">
+            Powered by live Daraz.pk data
+          </span>
+          <h1 className="font-brand text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
+            Shop Daraz <span className="text-amber-300">Smarter</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="max-w-lg text-sm text-white/80 sm:text-base">
+            Compare prices, track drops, and collect coupons — all in one place.
+            Save products to your cart and check out directly on Daraz.
           </p>
+          <div className="mt-1 flex w-full justify-center">
+            <SearchBar />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </section>
+
+      {/* Trending */}
+      <section className="mt-8">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-lg font-bold text-[#1a1730]">
+            <Flame className="h-5 w-5 text-brand-500" /> Trending Deals
+          </h2>
+          <Link
+            href="/search?q=deals"
+            className="text-sm font-semibold text-brand-600 hover:text-brand-700"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            See all
+          </Link>
         </div>
-      </main>
+        <Suspense fallback={<GridSkeleton />}>
+          <TrendingGrid />
+        </Suspense>
+      </section>
+
+      {/* Recently viewed (client, localStorage) */}
+      <RecentlyViewed />
+
+      {/* Feature cards */}
+      <section className="stagger mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {[
+          {
+            icon: TrendingUp,
+            title: "Price History",
+            desc: "See how a product's price moved over time so you buy at the right moment.",
+            href: "/search?q=deals",
+            cta: "Browse deals",
+          },
+          {
+            icon: Tag,
+            title: "Coupon Collector",
+            desc: "Browse active Daraz vouchers and copy codes with a single click.",
+            href: "/coupons",
+            cta: "View coupons",
+          },
+          {
+            icon: Bell,
+            title: "Price Alerts",
+            desc: "Set a target price and get an email the moment it drops.",
+            href: "/alerts",
+            cta: "Set an alert",
+          },
+        ].map(({ icon: Icon, title, desc, href, cta }) => (
+          <div
+            key={title}
+            className="flex flex-col rounded-3xl bg-white p-6 ring-1 ring-black/5 transition-shadow hover:shadow-lg"
+          >
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-50">
+              <Icon className="h-5 w-5 text-brand-500" />
+            </div>
+            <h3 className="mb-1 font-bold text-[#1a1730]">{title}</h3>
+            <p className="mb-4 flex-1 text-sm text-gray-500">{desc}</p>
+            <Link
+              href={href}
+              className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:gap-1.5 hover:text-brand-700"
+            >
+              {cta} <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }

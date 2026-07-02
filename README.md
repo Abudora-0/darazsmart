@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DarazSmart
+
+A smarter way to shop [Daraz.pk](https://www.daraz.pk). Search products, compare prices and ratings, save items to a virtual cart, collect coupons, and track price drops — all in one fast, modern interface that pulls **live Daraz data**.
+
+> **Disclaimer:** DarazSmart is an independent price-comparison tool and is **not affiliated with, endorsed by, or sponsored by Daraz.pk**. All products, prices, and trademarks belong to their respective owners. Purchases are completed on Daraz.
+
+---
+
+## Features
+
+- 🔎 **Live product search** — powered by Daraz's JSON catalog API (fast, no headless browser)
+- 🧠 **Smart query fallback** — over-specific searches still return relevant results
+- 🎚️ **Filter sidebar** — price range with histogram, star rating, brand; sort + "on sale" toggle
+- 🛒 **Virtual cart** — save products (anonymous or synced to your account) with a savings summary
+- 🏷️ **Coupon collector** — browse and copy voucher codes
+- 📈 **Price history + alerts** — track prices over time and get an email when they drop
+- 🕑 **Recently viewed** & **trending deals** on the home page
+- 🔐 **Auth** — email/password with validation, rate limiting, and bcrypt hashing
+- ⚡ **Load-more pagination**, skeleton loaders, and polished animations
+
+## Tech Stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 (App Router, Turbopack) + React 19 |
+| Styling | Tailwind CSS v4 |
+| Database | PostgreSQL (Neon) + Prisma 7 (`@prisma/adapter-pg`) |
+| Cache | Upstash Redis |
+| Auth | NextAuth v5 (Credentials) |
+| Email | Resend |
+| State | Zustand (localStorage-persisted cart) |
+| Charts | Recharts |
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# 1. Install
+npm install
+
+# 2. Configure environment
+cp .env.example .env.local   # then fill in the values
+
+# 3. Create the database schema
+npx prisma migrate dev --name init
+
+# 4. Run
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You'll need free accounts at **Neon** (database), **Upstash** (Redis), and **Resend** (email). See `.env.example` for the exact variables.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploying to Vercel
 
-## Learn More
+This app is **serverless-ready** — no headless browser; all scraping is done via `fetch`.
 
-To learn more about Next.js, take a look at the following resources:
+1. Push to GitHub and import the repo in Vercel.
+2. Add every variable from `.env.example` under **Project → Settings → Environment Variables** (set `NEXTAUTH_URL` to your deployed URL).
+3. Deploy. `prisma generate` runs automatically via the `postinstall` script.
+4. Run the migration once against your database: `npx prisma migrate deploy` (locally with the production `DIRECT_URL`, or as a one-off job).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Cron jobs** (`vercel.json`) run daily, protected by `CRON_SECRET`:
+- `refresh-prices` — updates prices for products in carts
+- `check-alerts` — emails users when their target price is hit
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+> Vercel's Hobby plan allows daily crons only. Coupons are populated via the database (`Coupon` rows) rather than live scraping, since Daraz's voucher page has no public API.
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/                  # routes (pages + API + cron)
+├── components/           # UI components
+├── lib/
+│   ├── scraper/search.ts # Daraz JSON search (fetch-based)
+│   ├── db.ts             # Prisma client
+│   ├── cache.ts          # Upstash Redis
+│   └── auth.ts           # NextAuth config
+├── store/cart.ts         # Zustand cart
+└── generated/prisma/     # generated Prisma client (gitignored)
+```
