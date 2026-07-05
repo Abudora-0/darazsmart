@@ -54,8 +54,9 @@ export function Navbar() {
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-sm shadow-brand-500/40 transition-transform group-hover:scale-105">
             <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2.5} />
           </span>
-          <span className="font-brand hidden text-xl font-bold tracking-tight text-[#1c1917] sm:block">
-            Daraz<span className="text-brand-500">Smart</span>
+          <span className="font-brand hidden text-xl font-bold tracking-tight sm:block">
+            <span className="text-amber-500">Daraz</span>
+            <span className="text-brand-500">Smart</span>
           </span>
         </Link>
 

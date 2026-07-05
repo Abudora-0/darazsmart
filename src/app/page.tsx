@@ -80,7 +80,7 @@ export default function HomePage() {
       </div>
 
       {/* Hero — no overflow-hidden so the search dropdown isn't clipped */}
-      <section className="relative z-10 rounded-[26px] bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 px-6 py-14 text-center sm:px-10 sm:py-16">
+      <section className="relative z-10 rounded-[26px] bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 px-6 py-14 text-center sm:px-10 sm:py-16">
         <div
           className="pointer-events-none absolute inset-0 rounded-[26px] opacity-40"
           style={{

@@ -42,8 +42,9 @@ export function Footer() {
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-sm shadow-brand-500/40">
                 <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2.5} />
               </span>
-              <span className="font-brand text-xl font-bold text-white">
-                Daraz<span className="text-brand-400">Smart</span>
+              <span className="font-brand text-xl font-bold">
+                <span className="text-amber-400">Daraz</span>
+                <span className="text-brand-400">Smart</span>
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-gray-400">
