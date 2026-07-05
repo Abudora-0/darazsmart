@@ -1,82 +1,127 @@
-# DarazSmart
+<div align="center">
 
-A smarter way to shop [Daraz.pk](https://www.daraz.pk). Search products, compare prices and ratings, save items to a virtual cart, collect coupons, and track price drops — all in one fast, modern interface that pulls **live Daraz data**.
+# 🛒 DarazSmart
 
-> **Disclaimer:** DarazSmart is an independent price-comparison tool and is **not affiliated with, endorsed by, or sponsored by Daraz.pk**. All products, prices, and trademarks belong to their respective owners. Purchases are completed on Daraz.
+**Shop Daraz.pk smarter.** Compare prices, track drops, collect coupons, and manage a virtual cart — all powered by live Daraz data.
+
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=flat-square&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+
+[Live Demo](https://darazsmart.vercel.app) · [Report an Issue](../../issues)
+
+</div>
 
 ---
 
-## Features
+> **Disclaimer:** DarazSmart is an independent, unofficial price-comparison tool. It is **not affiliated with, endorsed by, or sponsored by Daraz.pk**. All product data, prices, and trademarks belong to their respective owners; purchases are completed on Daraz.
 
-- 🔎 **Live product search** — powered by Daraz's JSON catalog API (fast, no headless browser)
-- 🧠 **Smart query fallback** — over-specific searches still return relevant results
-- 🎚️ **Filter sidebar** — price range with histogram, star rating, brand; sort + "on sale" toggle
-- 🛒 **Virtual cart** — save products (anonymous or synced to your account) with a savings summary
-- 🏷️ **Coupon collector** — browse and copy voucher codes
-- 📈 **Price history + alerts** — track prices over time and get an email when they drop
-- 🕑 **Recently viewed** & **trending deals** on the home page
-- 🔐 **Auth** — email/password with validation, rate limiting, and bcrypt hashing
-- ⚡ **Load-more pagination**, skeleton loaders, and polished animations
+## ✨ Features
 
-## Tech Stack
-
-| Layer | Choice |
+| | |
 |---|---|
-| Framework | Next.js 16 (App Router, Turbopack) + React 19 |
-| Styling | Tailwind CSS v4 |
-| Database | PostgreSQL (Neon) + Prisma 7 (`@prisma/adapter-pg`) |
-| Cache | Upstash Redis |
-| Auth | NextAuth v5 (Credentials) |
-| Email | Resend |
-| State | Zustand (localStorage-persisted cart) |
-| Charts | Recharts |
+| 🔎 **Live product search** | Powered by Daraz's own JSON catalog API — fast, no headless browser required |
+| 🧠 **Smart relevance filtering** | Scores results against your query so off-topic backfill items get filtered out |
+| 🎚️ **Rich filter sidebar** | Price range with histogram, star rating, brand, sort, and an "on sale" toggle |
+| 🛒 **Virtual cart** | Save products anonymously or synced to your account, with a live savings summary |
+| 🏷️ **Coupon collector** | Browse and one-click-copy active voucher codes |
+| 📈 **Price history & alerts** | Track price movement over time and get emailed the moment a target price hits |
+| 🕑 **Recently viewed & trending** | A home page that actually feels alive, not just a search box |
+| 🔐 **Secure auth** | Email/password with validation, rate limiting, and bcrypt hashing |
+| ⚡ **Fast & polished** | Skeleton loaders, toast feedback, micro-animations, load-more pagination |
 
-## Getting Started
+## 🧱 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | [Next.js 16](https://nextjs.org/) (App Router, Turbopack) + [React 19](https://react.dev/) |
+| Language | TypeScript |
+| Styling | [Tailwind CSS v4](https://tailwindcss.com/) |
+| Database | [PostgreSQL](https://www.postgresql.org/) via [Neon](https://neon.tech/) + [Prisma 7](https://www.prisma.io/) |
+| Cache | [Upstash Redis](https://upstash.com/) |
+| Auth | [NextAuth v5](https://authjs.dev/) (Credentials provider) |
+| Email | [Resend](https://resend.com/) |
+| Client state | [Zustand](https://zustand-demo.pmnd.rs/) (localStorage-persisted cart) |
+| Charts | [Recharts](https://recharts.org/) |
+| Deployment | [Vercel](https://vercel.com/) (fully serverless — no headless browser) |
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Free accounts at [Neon](https://neon.tech) (database), [Upstash](https://upstash.com) (Redis), and [Resend](https://resend.com) (email).
+
+### Setup
 
 ```bash
-# 1. Install
+# 1. Clone and install
+git clone https://github.com/Abudora-0/darazsmart.git
+cd darazsmart
 npm install
 
 # 2. Configure environment
-cp .env.example .env.local   # then fill in the values
+cp .env.example .env.local   # then fill in your values
 
 # 3. Create the database schema
 npx prisma migrate dev --name init
 
-# 4. Run
+# 4. (Optional) seed a few starter coupons
+npm run db:seed
+
+# 5. Run the dev server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) 🎉
 
-You'll need free accounts at **Neon** (database), **Upstash** (Redis), and **Resend** (email). See `.env.example` for the exact variables.
+See [`.env.example`](.env.example) for the exact environment variables required.
 
-## Deploying to Vercel
+## ☁️ Deploying to Vercel
 
-This app is **serverless-ready** — no headless browser; all scraping is done via `fetch`.
+DarazSmart is **fully serverless-ready** — all Daraz data fetching goes through `fetch` against Daraz's public JSON catalog endpoint, so no headless browser is ever needed in production.
 
-1. Push to GitHub and import the repo in Vercel.
-2. Add every variable from `.env.example` under **Project → Settings → Environment Variables** (set `NEXTAUTH_URL` to your deployed URL).
-3. Deploy. `prisma generate` runs automatically via the `postinstall` script.
-4. Run the migration once against your database: `npx prisma migrate deploy` (locally with the production `DIRECT_URL`, or as a one-off job).
+1. Push to GitHub and import the repo in [Vercel](https://vercel.com/new).
+2. Add every variable from `.env.example` under **Project → Settings → Environment Variables**.
+3. Deploy — `prisma generate` runs automatically via the `postinstall` script.
+4. Run the migration once against your production database: `npx prisma migrate deploy`.
 
-**Cron jobs** (`vercel.json`) run daily, protected by `CRON_SECRET`:
-- `refresh-prices` — updates prices for products in carts
-- `check-alerts` — emails users when their target price is hit
+Two daily cron jobs (`vercel.json`), protected by `CRON_SECRET`:
+- **`refresh-prices`** — updates prices for products currently sitting in a cart
+- **`check-alerts`** — emails users when their target price is hit
 
-> Vercel's Hobby plan allows daily crons only. Coupons are populated via the database (`Coupon` rows) rather than live scraping, since Daraz's voucher page has no public API.
+> Coupons are sourced from the database rather than live-scraped, since Daraz's voucher page has no public API — see `prisma/seed.ts`.
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 src/
-├── app/                  # routes (pages + API + cron)
-├── components/           # UI components
+├── app/                    # routes — pages, API handlers, and cron jobs
+├── components/             # shared UI components
 ├── lib/
-│   ├── scraper/search.ts # Daraz JSON search (fetch-based)
-│   ├── db.ts             # Prisma client
-│   ├── cache.ts          # Upstash Redis
-│   └── auth.ts           # NextAuth config
-├── store/cart.ts         # Zustand cart
-└── generated/prisma/     # generated Prisma client (gitignored)
+│   ├── scraper/search.ts   # fetch-based Daraz search (no browser)
+│   ├── search-service.ts   # search + relevance filtering + DB upsert
+│   ├── product-service.ts  # product + price-history fetching
+│   ├── db.ts                # Prisma client
+│   ├── cache.ts              # Upstash Redis client
+│   ├── auth.ts                # NextAuth configuration
+│   └── toast.ts                # lightweight toast notifications
+├── store/cart.ts           # Zustand cart store
+└── generated/prisma/       # generated Prisma client (gitignored)
+
+prisma/
+├── schema.prisma           # database schema
+└── seed.ts                 # starter coupon data
 ```
+
+## 📄 License
+
+Licensed under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+<sub>Built with ❤️ for smarter shopping.</sub>
+</div>
