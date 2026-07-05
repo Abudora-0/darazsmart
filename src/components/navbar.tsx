@@ -55,7 +55,7 @@ export function Navbar() {
             <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2.5} />
           </span>
           <span className="font-brand hidden text-xl font-bold tracking-tight sm:block">
-            <span className="text-amber-500">Daraz</span>
+            <span className="text-amber-400">Daraz</span>
             <span className="text-brand-500">Smart</span>
           </span>
         </Link>

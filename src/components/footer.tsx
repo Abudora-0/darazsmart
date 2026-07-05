@@ -43,7 +43,7 @@ export function Footer() {
                 <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2.5} />
               </span>
               <span className="font-brand text-xl font-bold">
-                <span className="text-amber-400">Daraz</span>
+                <span className="text-amber-300">Daraz</span>
                 <span className="text-brand-400">Smart</span>
               </span>
             </Link>
