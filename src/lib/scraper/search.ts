@@ -94,6 +94,63 @@ async function fetchDaraz(query: string, page: number): Promise<SearchResult[]> 
   }
 }
 
+// The category pills (see components/category-nav.tsx) search these exact
+// broad terms for browsing — titles legitimately won't contain the literal
+// category name, so relevance filtering must not apply to them.
+const BROWSE_CATEGORIES = new Set([
+  "deals",
+  "electronics",
+  "mobiles",
+  "fashion",
+  "home",
+  "beauty",
+  "appliances",
+  "sports",
+  "toys",
+  "groceries",
+]);
+
+/**
+ * Score + reorder results by how many of the query's words actually appear
+ * in the title, and drop the ones that share none. Daraz backfills a search
+ * with loosely-related or unrelated "you might also like" items once real
+ * matches run thin — this shows up as early as page 1 (e.g. "iphone" starts
+ * drifting into accessories/parts by item ~6) and gets worse on page 2+.
+ */
+function filterByRelevance(
+  results: SearchResult[],
+  queryTerms: string[]
+): SearchResult[] {
+  if (
+    queryTerms.length === 1 &&
+    BROWSE_CATEGORIES.has(queryTerms[0].toLowerCase())
+  ) {
+    return results;
+  }
+
+  const tokens = queryTerms.map((t) => t.toLowerCase());
+  const scored = results.map((r) => {
+    const titleLower = r.title.toLowerCase();
+    const score = tokens.reduce((n, t) => (titleLower.includes(t) ? n + 1 : n), 0);
+    return { r, score };
+  });
+
+  const minScore = Math.ceil(tokens.length / 2);
+  let relevant = scored.filter((s) => s.score >= minScore);
+
+  // Don't over-filter thin result sets — better to show loosely-related
+  // items than an almost-empty page.
+  if (relevant.length < Math.min(5, results.length)) {
+    relevant = scored.filter((s) => s.score >= 1);
+  }
+
+  // Stable sort by score (ties keep Daraz's original relative order).
+  return relevant
+    .map((s, i) => ({ ...s, i }))
+    .sort((a, b) => b.score - a.score || a.i - b.i)
+    .map((s) => s.r);
+}
+
 /**
  * Search Daraz. Daraz requires ALL query words to match a product (strict AND),
  * so an extra qualifier (e.g. "... Vp") can return zero results even when the
@@ -113,8 +170,9 @@ export async function searchProducts(
   // recommendations — Daraz returns 0 for unknown 2-word combos.
   const minTerms = terms.length >= 2 ? Math.max(2, terms.length - 3) : 1;
   for (let n = terms.length; n >= minTerms; n--) {
-    const results = await fetchDaraz(terms.slice(0, n).join(" "), page);
-    if (results.length > 0) return results;
+    const usedTerms = terms.slice(0, n);
+    const results = await fetchDaraz(usedTerms.join(" "), page);
+    if (results.length > 0) return filterByRelevance(results, usedTerms);
   }
   return [];
 }

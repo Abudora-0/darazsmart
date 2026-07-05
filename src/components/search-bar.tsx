@@ -18,6 +18,15 @@ import { cn } from "@/lib/utils";
 
 const POPULAR = ["iPhone", "Smart Watch", "Sneakers", "Headphones", "Perfume", "Laptop"];
 
+const HERO_PLACEHOLDERS = [
+  "Search for anything on Daraz…",
+  "Try “iPhone 17 Pro Max”…",
+  "Try “Smart Watch”…",
+  "Try “Wireless Headphones”…",
+  "Try “Nike Sneakers”…",
+  "Try “Men's Perfume”…",
+];
+
 interface SearchBarProps {
   defaultValue?: string;
   variant?: "hero" | "compact";
@@ -27,9 +36,11 @@ export function SearchBar({ defaultValue = "", variant = "hero" }: SearchBarProp
   const [query, setQuery] = useState(defaultValue);
   const [open, setOpen] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
+  const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
+  const isCompact = variant === "compact";
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -38,6 +49,15 @@ export function SearchBar({ defaultValue = "", variant = "hero" }: SearchBarProp
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
+
+  // Rotate the hero placeholder through a few example searches while idle.
+  useEffect(() => {
+    if (isCompact || query || open) return;
+    const id = setInterval(() => {
+      setPlaceholderIdx((i) => (i + 1) % HERO_PLACEHOLDERS.length);
+    }, 2800);
+    return () => clearInterval(id);
+  }, [isCompact, query, open]);
 
   function runSearch(q: string) {
     const term = q.trim();
@@ -57,8 +77,6 @@ export function SearchBar({ defaultValue = "", variant = "hero" }: SearchBarProp
     setOpen(true);
   }
 
-  const isCompact = variant === "compact";
-
   return (
     <div ref={ref} className={cn("relative", isCompact ? "w-full max-w-md" : "w-full max-w-2xl")}>
       <form onSubmit={handleSubmit} className={cn("flex w-full", !isCompact && "gap-2")}>
@@ -75,7 +93,9 @@ export function SearchBar({ defaultValue = "", variant = "hero" }: SearchBarProp
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={openDropdown}
-            placeholder={isCompact ? "Search products…" : "Search for anything on Daraz…"}
+            placeholder={
+              isCompact ? "Search products…" : HERO_PLACEHOLDERS[placeholderIdx]
+            }
             className={cn(
               "w-full text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none",
               isCompact

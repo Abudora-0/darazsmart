@@ -1,8 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShoppingBag, ShoppingCart, Bell, Tag, LogIn } from "lucide-react";
+import {
+  ShoppingBag,
+  ShoppingCart,
+  Bell,
+  Tag,
+  LogIn,
+  Search,
+  X,
+} from "lucide-react";
 import { useCartStore } from "@/store/cart";
 import { useSession } from "next-auth/react";
 import { SearchBar } from "@/components/search-bar";
@@ -14,6 +23,7 @@ export function Navbar() {
   const router = useRouter();
   const cartCount = useCartStore((s) => s.items.length);
   const { data: session } = useSession();
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const navItems = [
     { href: "/coupons", label: "Coupons", icon: Tag },
@@ -24,8 +34,14 @@ export function Navbar() {
   return (
     <header className="relative z-40 border-b border-black/5 bg-white/80 backdrop-blur">
       <div className="flex items-center gap-4 px-4 py-3.5 sm:px-6">
-        {/* Logo */}
-        <Link href="/" className="group flex shrink-0 items-center gap-2">
+        {/* Logo — hidden while the mobile search row takes over */}
+        <Link
+          href="/"
+          className={cn(
+            "group flex shrink-0 items-center gap-2",
+            mobileSearchOpen && "hidden sm:flex"
+          )}
+        >
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-sm shadow-brand-500/40 transition-transform group-hover:scale-105">
             <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2.5} />
           </span>
@@ -34,13 +50,41 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Search */}
-        <div className="flex-1">
+        {/* Search — always inline from sm up */}
+        <div className="hidden flex-1 sm:block">
           <SearchBar variant="compact" />
         </div>
 
-        {/* Right nav */}
-        <nav className="flex items-center gap-1">
+        {/* Mobile: collapsed to a search icon until tapped */}
+        {!mobileSearchOpen && (
+          <button
+            onClick={() => setMobileSearchOpen(true)}
+            aria-label="Open search"
+            className="ml-auto flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 sm:hidden"
+          >
+            <Search className="h-5 w-5" />
+          </button>
+        )}
+        {mobileSearchOpen && (
+          <div className="flex flex-1 items-center gap-2 sm:hidden">
+            <SearchBar variant="compact" />
+            <button
+              onClick={() => setMobileSearchOpen(false)}
+              aria-label="Close search"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-gray-100"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        )}
+
+        {/* Right nav — hidden on mobile while search is expanded */}
+        <nav
+          className={cn(
+            "items-center gap-1",
+            mobileSearchOpen ? "hidden sm:flex" : "flex"
+          )}
+        >
           {navItems.map(({ href, label, icon: Icon, badge }) => (
             <Link
               key={href}
