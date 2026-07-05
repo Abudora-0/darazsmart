@@ -4,7 +4,9 @@
  * so it doesn't depend on knowing the production domain ahead of time.
  */
 export function getBaseUrl(): string {
-  if (process.env.NEXTAUTH_URL) return process.env.NEXTAUTH_URL;
+  // On Vercel, VERCEL_URL always matches the running deployment — prefer it so
+  // a stray NEXTAUTH_URL=localhost (e.g. pasted from .env.local) can't break prod.
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  if (process.env.NEXTAUTH_URL) return process.env.NEXTAUTH_URL;
   return "http://localhost:3000";
 }
