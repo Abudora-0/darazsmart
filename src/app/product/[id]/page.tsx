@@ -5,11 +5,12 @@ import { PriceHistoryChart } from "@/components/price-history-chart";
 import { RecordView } from "@/components/record-view";
 import { AddToCartButton } from "./add-to-cart-button";
 import { SetAlertForm } from "./set-alert-form";
+import { getBaseUrl } from "@/lib/base-url";
 import { formatPrice } from "@/lib/utils";
 
 async function fetchProduct(id: string) {
   try {
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/product/${id}`, {
+    const res = await fetch(`${getBaseUrl()}/api/product/${id}`, {
       cache: "no-store",
     });
     if (!res.ok) return null;

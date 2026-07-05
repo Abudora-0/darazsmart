@@ -4,6 +4,7 @@ import { SearchBar } from "@/components/search-bar";
 import { CategoryNav } from "@/components/category-nav";
 import { ProductCard, type SearchProductLike } from "@/components/product-card";
 import { RecentlyViewed } from "@/components/recently-viewed";
+import { getBaseUrl } from "@/lib/base-url";
 import { TrendingUp, Tag, Bell, ArrowRight, Flame } from "lucide-react";
 
 // Pull a mix of categories so the home grid shows variety, not one type.
@@ -18,7 +19,7 @@ const TRENDING_QUERIES = [
 async function fetchCategory(q: string): Promise<SearchProductLike[]> {
   try {
     const res = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/search?q=${encodeURIComponent(q)}`,
+      `${getBaseUrl()}/api/search?q=${encodeURIComponent(q)}`,
       { next: { revalidate: 1800 } }
     );
     const data = await res.json();

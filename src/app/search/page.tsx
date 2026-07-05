@@ -2,12 +2,13 @@ import { Suspense } from "react";
 import { CategoryNav } from "@/components/category-nav";
 import { SearchResults, type SearchProduct } from "@/components/search-results";
 import { SearchSkeleton } from "@/components/search-skeleton";
+import { getBaseUrl } from "@/lib/base-url";
 import { Search } from "lucide-react";
 
 async function fetchResults(query: string): Promise<SearchProduct[]> {
   try {
     const res = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/search?q=${encodeURIComponent(query)}`,
+      `${getBaseUrl()}/api/search?q=${encodeURIComponent(query)}`,
       { cache: "no-store" }
     );
     const data = await res.json();
