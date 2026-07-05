@@ -7,6 +7,9 @@ import { RecentlyViewed } from "@/components/recently-viewed";
 import { getBaseUrl } from "@/lib/base-url";
 import { TrendingUp, Tag, Bell, ArrowRight, Flame } from "lucide-react";
 
+// 5 categories fetched in parallel on a cold cache can take a few seconds.
+export const maxDuration = 30;
+
 // Pull a mix of categories so the home grid shows variety, not one type.
 const TRENDING_QUERIES = [
   "headphones",

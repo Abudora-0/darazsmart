@@ -5,6 +5,10 @@ import { SearchSkeleton } from "@/components/search-skeleton";
 import { getBaseUrl } from "@/lib/base-url";
 import { Search } from "lucide-react";
 
+// Matches /api/search's maxDuration so a cold-start search never gets cut
+// off by the page's own request before the API call can finish.
+export const maxDuration = 30;
+
 async function fetchResults(query: string): Promise<SearchProduct[]> {
   try {
     const res = await fetch(

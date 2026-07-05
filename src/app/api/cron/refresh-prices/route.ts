@@ -2,6 +2,9 @@ import { type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { searchProducts } from "@/lib/scraper/search";
 
+// Loops a Daraz search per cart product — can take a while with many items.
+export const maxDuration = 30;
+
 // Refreshes prices for products currently in any cart. Uses the fetch-based
 // search API (no headless browser) so it runs on serverless/Vercel: we
 // re-search each product's title and match it back by its Daraz URL.

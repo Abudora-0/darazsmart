@@ -3,6 +3,10 @@ import { searchProducts } from "@/lib/scraper/search";
 import { getCached, setCached } from "@/lib/cache";
 import { prisma } from "@/lib/db";
 
+// Cold starts (fresh Neon connection + ~40 upserts) can exceed the default
+// 10s serverless limit. Give this route real breathing room on Vercel.
+export const maxDuration = 30;
+
 // Run async operations in parallel, but in bounded chunks so we don't
 // exhaust the connection pool with 40 simultaneous queries.
 async function chunkedMap<T, R>(
