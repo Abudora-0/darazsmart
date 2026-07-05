@@ -4,7 +4,7 @@ import { SearchBar } from "@/components/search-bar";
 import { CategoryNav } from "@/components/category-nav";
 import { ProductCard, type SearchProductLike } from "@/components/product-card";
 import { RecentlyViewed } from "@/components/recently-viewed";
-import { getBaseUrl } from "@/lib/base-url";
+import { searchAndUpsert } from "@/lib/search-service";
 import { TrendingUp, Tag, Bell, ArrowRight, Flame } from "lucide-react";
 
 // 5 categories fetched in parallel on a cold cache can take a few seconds.
@@ -20,16 +20,9 @@ const TRENDING_QUERIES = [
 ];
 
 async function fetchCategory(q: string): Promise<SearchProductLike[]> {
-  try {
-    const res = await fetch(
-      `${getBaseUrl()}/api/search?q=${encodeURIComponent(q)}`,
-      { next: { revalidate: 1800 } }
-    );
-    const data = await res.json();
-    return (data.results ?? []).filter((p: SearchProductLike) => p.image);
-  } catch {
-    return [];
-  }
+  // searchAndUpsert has its own ~45min Redis cache, so no extra fetch-cache needed.
+  const results = await searchAndUpsert(q, 1).catch(() => []);
+  return results.filter((p) => !!p.image);
 }
 
 async function TrendingGrid() {

@@ -1,29 +1,16 @@
 import { Suspense } from "react";
 import { CategoryNav } from "@/components/category-nav";
-import { SearchResults, type SearchProduct } from "@/components/search-results";
+import { SearchResults } from "@/components/search-results";
 import { SearchSkeleton } from "@/components/search-skeleton";
-import { getBaseUrl } from "@/lib/base-url";
+import { searchAndUpsert } from "@/lib/search-service";
 import { Search } from "lucide-react";
 
-// Matches /api/search's maxDuration so a cold-start search never gets cut
-// off by the page's own request before the API call can finish.
+// Cold starts (fresh Neon connection + ~40 upserts) can exceed the default
+// 10s serverless limit on the first request after a deploy or DB idle-suspend.
 export const maxDuration = 30;
 
-async function fetchResults(query: string): Promise<SearchProduct[]> {
-  try {
-    const res = await fetch(
-      `${getBaseUrl()}/api/search?q=${encodeURIComponent(query)}`,
-      { cache: "no-store" }
-    );
-    const data = await res.json();
-    return data.results ?? [];
-  } catch {
-    return [];
-  }
-}
-
 async function Results({ query }: { query: string }) {
-  const results = await fetchResults(query);
+  const results = await searchAndUpsert(query, 1).catch(() => []);
 
   if (results.length === 0) {
     return (

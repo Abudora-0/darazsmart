@@ -5,27 +5,14 @@ import { PriceHistoryChart } from "@/components/price-history-chart";
 import { RecordView } from "@/components/record-view";
 import { AddToCartButton } from "./add-to-cart-button";
 import { SetAlertForm } from "./set-alert-form";
-import { getBaseUrl } from "@/lib/base-url";
+import { getProductWithHistory } from "@/lib/product-service";
 import { formatPrice } from "@/lib/utils";
-
-async function fetchProduct(id: string) {
-  try {
-    const res = await fetch(`${getBaseUrl()}/api/product/${id}`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.product;
-  } catch {
-    return null;
-  }
-}
 
 export default async function ProductPage(props: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await props.params;
-  const product = await fetchProduct(id);
+  const product = await getProductWithHistory(id).catch(() => null);
 
   if (!product) {
     return (
@@ -107,7 +94,7 @@ export default async function ProductPage(props: {
               </p>
               {hasDiscount && (
                 <p className="text-sm text-gray-400 line-through">
-                  {formatPrice(product.originalPrice)}
+                  {formatPrice(product.originalPrice ?? 0)}
                 </p>
               )}
             </div>
@@ -125,7 +112,19 @@ export default async function ProductPage(props: {
           )}
 
           <div className="flex gap-3">
-            <AddToCartButton product={product} />
+            <AddToCartButton
+              product={{
+                id: product.id,
+                darazUrl: product.darazUrl,
+                title: product.title,
+                image: product.image,
+                currentPrice: product.currentPrice,
+                originalPrice: product.originalPrice ?? undefined,
+                discount: product.discount ?? undefined,
+                rating: product.rating ?? undefined,
+                seller: product.seller ?? undefined,
+              }}
+            />
             <a
               href={product.darazUrl}
               target="_blank"

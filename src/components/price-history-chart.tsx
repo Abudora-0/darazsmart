@@ -12,7 +12,7 @@ import {
 import { format } from "date-fns";
 
 interface PricePoint {
-  timestamp: string;
+  timestamp: string | Date;
   price: number;
 }
 
