@@ -1,11 +1,15 @@
+import { cache } from "react";
 import { prisma } from "@/lib/db";
 
 /**
  * Fetch a product with its price history, recording a new history point
  * only when the price has actually changed. Called directly (in-process)
  * by both the /api/product/[id] route and the product page — no self-fetch.
+ *
+ * Wrapped in React's cache() so calling it from both generateMetadata and
+ * the page body in the same request hits the DB only once.
  */
-export async function getProductWithHistory(id: string) {
+export const getProductWithHistory = cache(async (id: string) => {
   const product = await prisma.product.findUnique({
     where: { id },
     include: {
@@ -23,4 +27,4 @@ export async function getProductWithHistory(id: string) {
   }
 
   return product;
-}
+});

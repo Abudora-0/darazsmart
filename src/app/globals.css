@@ -4,26 +4,26 @@
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-brand: var(--font-space-grotesk), ui-sans-serif, sans-serif;
 
-  /* Brand — indigo/violet, tuned to the reference design */
-  --color-brand-50: #f4f2fe;
-  --color-brand-100: #eae7fd;
-  --color-brand-200: #d6cffb;
-  --color-brand-300: #b7a9f6;
-  --color-brand-400: #957ff0;
-  --color-brand-500: #6c5ce7;
-  --color-brand-600: #5a45db;
-  --color-brand-700: #4b38c0;
-  --color-brand-800: #3f309c;
-  --color-brand-900: #362c7c;
+  /* Brand — Daraz-style warm orange */
+  --color-brand-50: #fff4ec;
+  --color-brand-100: #ffe3cc;
+  --color-brand-200: #ffc699;
+  --color-brand-300: #ffa15c;
+  --color-brand-400: #ff7d30;
+  --color-brand-500: #f8560a;
+  --color-brand-600: #e0450a;
+  --color-brand-700: #b8380c;
+  --color-brand-800: #8f2d0f;
+  --color-brand-900: #6e240f;
 
   /* Surfaces */
   --color-surface: #ffffff;
-  --color-canvas: #f5f5fb;
+  --color-canvas: #fdf7f2;
 }
 
 :root {
-  --background: #f5f5fb;
-  --foreground: #1a1730;
+  --background: #fdf7f2;
+  --foreground: #1c1917;
 }
 
 body {
@@ -33,12 +33,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Purple gradient backdrop for the app shell */
+/* Warm orange gradient backdrop for the app shell — Daraz-inspired */
 .app-backdrop {
   background:
-    radial-gradient(1200px 600px at 15% -10%, #8b7bf0 0%, transparent 55%),
-    radial-gradient(1000px 500px at 100% 0%, #6c5ce7 0%, transparent 50%),
-    linear-gradient(160deg, #7768e8 0%, #6355d8 45%, #5647c4 100%);
+    radial-gradient(1200px 600px at 15% -10%, #ffb26b 0%, transparent 55%),
+    radial-gradient(1000px 500px at 100% 0%, #f8560a 0%, transparent 50%),
+    linear-gradient(160deg, #ff8a3d 0%, #f8560a 45%, #c2340a 100%);
 }
 
 /* Thin, subtle scrollbars inside scroll areas */
@@ -47,7 +47,7 @@ body {
   height: 6px;
 }
 .scroll-slim::-webkit-scrollbar-thumb {
-  background: #d6cffb;
+  background: #ffd3ac;
   border-radius: 9999px;
 }
 
@@ -92,7 +92,7 @@ body {
 .skeleton {
   position: relative;
   overflow: hidden;
-  background: #ece9f7;
+  background: #f3e9e0;
 }
 .skeleton::after {
   content: "";
@@ -108,10 +108,42 @@ body {
   animation: shimmer 1.4s infinite;
 }
 
+/* Quick bump for "just added" feedback (heart/cart icons) */
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.28);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-pop {
+  animation: pop 0.38s ease;
+}
+
+/* Cart badge bump when an item is added */
+@keyframes bump {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.35);
+  }
+}
+.animate-bump {
+  animation: bump 0.4s ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .stagger > *,
   .animate-fade-up,
   .animate-fade-in,
+  .animate-pop,
+  .animate-bump,
   .skeleton::after {
     animation: none;
   }
@@ -137,8 +169,8 @@ body {
   width: 18px;
   border-radius: 9999px;
   background: #ffffff;
-  border: 3px solid #6c5ce7;
-  box-shadow: 0 2px 6px rgba(50, 25, 110, 0.3);
+  border: 3px solid #f8560a;
+  box-shadow: 0 2px 6px rgba(120,45,10, 0.3);
   cursor: pointer;
   margin-top: -1px;
 }
@@ -148,7 +180,7 @@ body {
   width: 16px;
   border-radius: 9999px;
   background: #ffffff;
-  border: 3px solid #6c5ce7;
-  box-shadow: 0 2px 6px rgba(50, 25, 110, 0.3);
+  border: 3px solid #f8560a;
+  box-shadow: 0 2px 6px rgba(120,45,10, 0.3);
   cursor: pointer;
 }

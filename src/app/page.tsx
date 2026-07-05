@@ -108,7 +108,7 @@ export default function HomePage() {
       {/* Trending */}
       <section className="mt-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-lg font-bold text-[#1a1730]">
+          <h2 className="flex items-center gap-2 text-lg font-bold text-[#1c1917]">
             <Flame className="h-5 w-5 text-brand-500" /> Trending Deals
           </h2>
           <Link
@@ -158,7 +158,7 @@ export default function HomePage() {
             <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-50">
               <Icon className="h-5 w-5 text-brand-500" />
             </div>
-            <h3 className="mb-1 font-bold text-[#1a1730]">{title}</h3>
+            <h3 className="mb-1 font-bold text-[#1c1917]">{title}</h3>
             <p className="mb-4 flex-1 text-sm text-gray-500">{desc}</p>
             <Link
               href={href}

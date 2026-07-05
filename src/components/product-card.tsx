@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/cart";
 import { formatPrice, cn } from "@/lib/utils";
+import { toast } from "@/lib/toast";
 
 export interface SearchProductLike {
   id: string;
@@ -23,6 +25,7 @@ export interface SearchProductLike {
 export function ProductCard(props: SearchProductLike) {
   const { addItem, removeItem, hasItem } = useCartStore();
   const inCart = hasItem(props.id);
+  const [popping, setPopping] = useState(false);
 
   const rating = props.rating ?? undefined;
   const reviewCount = props.reviewCount ?? undefined;
@@ -34,6 +37,7 @@ export function ProductCard(props: SearchProductLike) {
   function toggleCart() {
     if (inCart) {
       removeItem(props.id);
+      toast("Removed from cart");
     } else {
       addItem({
         id: props.id,
@@ -46,13 +50,15 @@ export function ProductCard(props: SearchProductLike) {
         rating,
         seller: props.seller ?? undefined,
       });
+      toast(`Added "${props.title.slice(0, 40)}" to cart`, { variant: "success" });
+      setPopping(true);
     }
   }
 
   return (
     <div
       style={{ ["--i" as string]: props.index ?? 0 }}
-      className="group relative flex flex-col rounded-3xl bg-white p-3 ring-1 ring-black/5 shadow-[0_2px_10px_-4px_rgba(50,25,110,0.15)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_-18px_rgba(50,25,110,0.35)]"
+      className="group relative flex flex-col rounded-3xl bg-white p-3 ring-1 ring-black/5 shadow-[0_2px_10px_-4px_rgba(120,45,10,0.15)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_-18px_rgba(120,45,10,0.35)]"
     >
       {/* Image */}
       <div className="relative">
@@ -84,9 +90,11 @@ export function ProductCard(props: SearchProductLike) {
 
         <button
           onClick={toggleCart}
+          onAnimationEnd={() => setPopping(false)}
           aria-label={inCart ? "Remove from cart" : "Save to cart"}
           className={cn(
             "absolute right-2.5 top-2.5 flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition-all hover:scale-110",
+            popping && "animate-pop",
             inCart
               ? "bg-brand-500 text-white"
               : "bg-white/90 text-gray-500 backdrop-blur hover:text-brand-500"
@@ -99,7 +107,7 @@ export function ProductCard(props: SearchProductLike) {
       {/* Body */}
       <div className="flex flex-1 flex-col gap-2 px-1 pt-3">
         <Link href={`/product/${props.id}`}>
-          <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-[#1a1730] transition-colors hover:text-brand-600">
+          <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-[#1c1917] transition-colors hover:text-brand-600">
             {props.title}
           </h3>
         </Link>

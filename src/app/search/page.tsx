@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { CategoryNav } from "@/components/category-nav";
 import { SearchResults } from "@/components/search-results";
 import { SearchSkeleton } from "@/components/search-skeleton";
@@ -8,6 +9,16 @@ import { Search } from "lucide-react";
 // Cold starts (fresh Neon connection + ~40 upserts) can exceed the default
 // 10s serverless limit on the first request after a deploy or DB idle-suspend.
 export const maxDuration = 30;
+
+export async function generateMetadata(props: {
+  searchParams: Promise<{ q?: string }>;
+}): Promise<Metadata> {
+  const { q } = await props.searchParams;
+  const query = q?.trim();
+  return {
+    title: query ? `"${query}" — Search Results | DarazSmart` : "Search — DarazSmart",
+  };
+}
 
 async function Results({ query }: { query: string }) {
   const results = await searchAndUpsert(query, 1).catch(() => []);
@@ -39,7 +50,7 @@ export default async function SearchPage(props: {
 
       {query ? (
         <>
-          <h1 className="mb-5 text-lg font-bold text-[#1a1730]">
+          <h1 className="mb-5 text-lg font-bold text-[#1c1917]">
             Results for{" "}
             <span className="text-brand-600">&ldquo;{query}&rdquo;</span>
           </h1>

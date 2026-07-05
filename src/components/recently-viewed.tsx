@@ -16,7 +16,7 @@ export function RecentlyViewed() {
 
   return (
     <section className="mt-8">
-      <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-[#1a1730]">
+      <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-[#1c1917]">
         <Clock className="h-5 w-5 text-brand-500" /> Recently Viewed
       </h2>
       <div className="stagger grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">

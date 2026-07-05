@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -24,6 +24,15 @@ export function Navbar() {
   const cartCount = useCartStore((s) => s.items.length);
   const { data: session } = useSession();
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [badgeBump, setBadgeBump] = useState(false);
+  const prevCartCount = useRef(cartCount);
+
+  useEffect(() => {
+    if (cartCount > prevCartCount.current) {
+      setBadgeBump(true);
+    }
+    prevCartCount.current = cartCount;
+  }, [cartCount]);
 
   const navItems = [
     { href: "/coupons", label: "Coupons", icon: Tag },
@@ -45,7 +54,7 @@ export function Navbar() {
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-sm shadow-brand-500/40 transition-transform group-hover:scale-105">
             <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2.5} />
           </span>
-          <span className="font-brand hidden text-xl font-bold tracking-tight text-[#1a1730] sm:block">
+          <span className="font-brand hidden text-xl font-bold tracking-tight text-[#1c1917] sm:block">
             Daraz<span className="text-brand-500">Smart</span>
           </span>
         </Link>
@@ -99,7 +108,13 @@ export function Navbar() {
               <span className="relative">
                 <Icon className="h-[18px] w-[18px]" />
                 {badge !== undefined && badge > 0 && (
-                  <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">
+                  <span
+                    onAnimationEnd={() => setBadgeBump(false)}
+                    className={cn(
+                      "absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white",
+                      href === "/cart" && badgeBump && "animate-bump"
+                    )}
+                  >
                     {badge}
                   </span>
                 )}

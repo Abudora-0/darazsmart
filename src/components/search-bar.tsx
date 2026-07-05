@@ -108,7 +108,7 @@ export function SearchBar({ defaultValue = "", variant = "hero" }: SearchBarProp
           <button
             type="submit"
             disabled={pending}
-            className="flex items-center gap-2 rounded-2xl bg-brand-500 px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-brand-500/30 transition-colors hover:bg-brand-600 disabled:opacity-70"
+            className="flex items-center gap-2 rounded-2xl bg-brand-500 px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-brand-500/30 transition-all hover:bg-brand-600 active:scale-95 disabled:opacity-70"
           >
             {pending ? (
               <>
@@ -125,7 +125,7 @@ export function SearchBar({ defaultValue = "", variant = "hero" }: SearchBarProp
 
       {/* Suggestions dropdown */}
       {open && (
-        <div className="animate-fade-up absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-2xl bg-white p-2 text-left shadow-[0_20px_50px_-15px_rgba(50,25,110,0.35)] ring-1 ring-black/5">
+        <div className="animate-fade-up absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-2xl bg-white p-2 text-left shadow-[0_20px_50px_-15px_rgba(120,45,10,0.35)] ring-1 ring-black/5">
           {recent.length > 0 && (
             <div className="mb-1">
               <div className="flex items-center justify-between px-2 py-1">

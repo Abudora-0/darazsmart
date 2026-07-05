@@ -42,9 +42,9 @@ export function AccountMenu({
       </button>
 
       {open && (
-        <div className="animate-fade-up absolute right-0 z-50 mt-2 w-60 origin-top-right overflow-hidden rounded-2xl bg-white p-1.5 shadow-[0_20px_50px_-15px_rgba(50,25,110,0.35)] ring-1 ring-black/5">
+        <div className="animate-fade-up absolute right-0 z-50 mt-2 w-60 origin-top-right overflow-hidden rounded-2xl bg-white p-1.5 shadow-[0_20px_50px_-15px_rgba(120,45,10,0.35)] ring-1 ring-black/5">
           <div className="border-b border-gray-100 px-3 py-2.5">
-            <p className="truncate text-sm font-semibold text-[#1a1730]">
+            <p className="truncate text-sm font-semibold text-[#1c1917]">
               {name ?? "My account"}
             </p>
             {email && (

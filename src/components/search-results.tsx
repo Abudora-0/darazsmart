@@ -139,7 +139,7 @@ export function SearchResults({
         {/* Price Range */}
         <section className="rounded-3xl bg-white p-5 ring-1 ring-black/5">
           <div className="mb-1 flex items-center justify-between">
-            <h3 className="font-bold text-[#1a1730]">Price Range</h3>
+            <h3 className="font-bold text-[#1c1917]">Price Range</h3>
             <button
               onClick={() => {
                 setLo(minPrice);
@@ -207,10 +207,10 @@ export function SearchResults({
             />
           </div>
           <div className="flex items-center justify-between">
-            <span className="rounded-full bg-[#1a1730] px-2.5 py-1 text-xs font-semibold text-white">
+            <span className="rounded-full bg-[#1c1917] px-2.5 py-1 text-xs font-semibold text-white">
               {formatPrice(lo)}
             </span>
-            <span className="rounded-full bg-[#1a1730] px-2.5 py-1 text-xs font-semibold text-white">
+            <span className="rounded-full bg-[#1c1917] px-2.5 py-1 text-xs font-semibold text-white">
               {formatPrice(hi)}
             </span>
           </div>
@@ -218,7 +218,7 @@ export function SearchResults({
 
         {/* Star Rating */}
         <section className="rounded-3xl bg-white p-5 ring-1 ring-black/5">
-          <h3 className="mb-3 font-bold text-[#1a1730]">Star Rating</h3>
+          <h3 className="mb-3 font-bold text-[#1c1917]">Star Rating</h3>
           <div className="flex flex-col gap-1.5">
             {RATING_OPTIONS.map((opt) => (
               <button
@@ -250,7 +250,7 @@ export function SearchResults({
         {brands.length > 0 && (
           <section className="rounded-3xl bg-white p-5 ring-1 ring-black/5">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="font-bold text-[#1a1730]">Brand</h3>
+              <h3 className="font-bold text-[#1c1917]">Brand</h3>
               {selectedBrands.size > 0 && (
                 <button
                   onClick={() => setSelectedBrands(new Set())}
@@ -288,7 +288,7 @@ export function SearchResults({
         {/* Toolbar */}
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-gray-500">
-            <span className="font-semibold text-[#1a1730]">
+            <span className="font-semibold text-[#1c1917]">
               {filtered.length}
             </span>{" "}
             {filtered.length === 1 ? "product" : "products"}

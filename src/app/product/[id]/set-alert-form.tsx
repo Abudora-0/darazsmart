@@ -5,6 +5,7 @@ import { Bell } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
+import { toast } from "@/lib/toast";
 
 export function SetAlertForm({
   productId,
@@ -37,8 +38,12 @@ export function SetAlertForm({
       });
       if (!res.ok) throw new Error();
       setStatus("saved");
+      toast(`We'll email you when the price drops to ${formatPrice(Number(targetPrice))}`, {
+        variant: "success",
+      });
     } catch {
       setStatus("error");
+      toast("Couldn't save the alert. Please try again.", { variant: "error" });
     }
   }
 
@@ -64,7 +69,7 @@ export function SetAlertForm({
         <button
           type="submit"
           disabled={status === "saving"}
-          className="rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-600 disabled:opacity-50"
+          className="rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-brand-600 active:scale-95 disabled:opacity-50"
         >
           {status === "saving" ? "Saving…" : status === "saved" ? "Saved!" : "Alert me"}
         </button>

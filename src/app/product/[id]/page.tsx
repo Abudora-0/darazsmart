@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ExternalLink, Star, ChevronLeft } from "lucide-react";
@@ -7,6 +8,20 @@ import { AddToCartButton } from "./add-to-cart-button";
 import { SetAlertForm } from "./set-alert-form";
 import { getProductWithHistory } from "@/lib/product-service";
 import { formatPrice } from "@/lib/utils";
+
+export async function generateMetadata(props: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await props.params;
+  const product = await getProductWithHistory(id).catch(() => null);
+  if (!product) return { title: "Product not found — DarazSmart" };
+
+  const priceText = formatPrice(product.currentPrice);
+  return {
+    title: `${product.title} — ${priceText} | DarazSmart`,
+    description: `${product.title} on Daraz.pk for ${priceText}. Compare prices, track history, and set a price alert on DarazSmart.`,
+  };
+}
 
 export default async function ProductPage(props: {
   params: Promise<{ id: string }>;
@@ -67,7 +82,7 @@ export default async function ProductPage(props: {
 
         {/* Details */}
         <div className="flex flex-col gap-4 rounded-3xl bg-white p-6 ring-1 ring-black/5">
-          <h1 className="text-xl font-bold leading-snug text-[#1a1730]">
+          <h1 className="text-xl font-bold leading-snug text-[#1c1917]">
             {product.title}
           </h1>
 
@@ -146,7 +161,7 @@ export default async function ProductPage(props: {
       {/* Price history */}
       {product.priceHistory?.length > 0 && (
         <div className="mt-6 rounded-3xl bg-white p-6 ring-1 ring-black/5">
-          <h2 className="mb-4 text-base font-bold text-[#1a1730]">
+          <h2 className="mb-4 text-base font-bold text-[#1c1917]">
             Price History
           </h2>
           <PriceHistoryChart data={product.priceHistory} />
